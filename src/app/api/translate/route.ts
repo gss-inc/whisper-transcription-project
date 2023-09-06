@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server'
 import { table, minifyData } from "../../utils/airtable"
 import { OpenAIClient, AzureKeyCredential } from '@azure/openai';
@@ -53,7 +52,14 @@ export async function PUT(req: Request) {
             'ch_text': newData
           }
           const updatedRecords = await table.update(id, updatedField);
-          return NextResponse.json(updatedRecords)
+          
+          return new NextResponse(JSON.stringify(updatedRecords), {
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'PUT',
+              'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            },
+          })
         } 
 
     } catch (error) {
