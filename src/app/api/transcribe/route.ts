@@ -64,9 +64,10 @@ export async function PUT(req: Request) {
           const updatedRecords = await table.update(id, updatedField);
 
           return new NextResponse(JSON.stringify(updatedRecords), {
+            status: 200,
             headers: {
               'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Methods': 'PUT',
+              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
               'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             },
           })
