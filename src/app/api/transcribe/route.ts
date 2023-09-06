@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { table, minifyData } from "../../utils/airtable"
 import { OpenAIClient, AzureKeyCredential } from '@azure/openai';
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET() {
     try {
         const records = await table.select({}).all();
         const minifiedRecords = await minifyData(records);
@@ -12,7 +12,7 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
    
     } catch (error) {
         console.error('Error handling GET request for data:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        return NextResponse.json({ "message": "Error handling GET request for data" })
     }
 }
 
