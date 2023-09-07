@@ -51,9 +51,16 @@ export async function PUT(req: Request) {
           const updatedField = {
             'ch_text': newData
           }
-          const updatedRecords = await table.update(id, updatedField);
+          const translateRecord = await table.update(id, updatedField);
 
-          return NextResponse.json(updatedRecords)
+          return new NextResponse(JSON.stringify(translateRecord), {
+            status: 200,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            },
+          })
         } 
 
     } catch (error) {
