@@ -22,14 +22,13 @@ export async function PUT(req: Request) {
             textToTranslate = jp_text
         }
 
-        const prompt = `Translate this to chinese - ${textToTranslate}`
+        const prompt = `文章を中国語に翻訳してください。生成フォーマットはそのまま使用してください。`
         const messages = [
-            {
-              role: 'system',
-              content:
-                'You are a qualified translator',
-            },
-            { role: 'user', content: prompt },
+          {
+            role: 'user',
+            content: textToTranslate,
+          },
+          { role: 'assistant', content: prompt },
         ];
 
         const client = new OpenAIClient(

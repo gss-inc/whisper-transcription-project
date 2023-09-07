@@ -32,14 +32,13 @@ export async function PUT(req: Request) {
         const singleRecord = await table.find(id)
         const jp_text = singleRecord.get('jp_text')
 
-        const prompt = `Translate this to japanese ${jp_text}`
+        const prompt = `文章を読み取り、会話の前後がおかしかったり、体裁がおかしな部分があれば修正した文章を生成してください。生成フォーマットはそのまま使用してください。`
         const messages = [
             {
-              role: 'system',
-              content:
-                'You are a qualified translator',
+              role: 'user',
+              content: jp_text,
             },
-            { role: 'user', content: prompt },
+            { role: 'assistant', content: prompt },
         ];
 
         const client = new OpenAIClient(
