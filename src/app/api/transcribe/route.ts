@@ -6,14 +6,13 @@ export async function GET() {
     try {
         const records = await table.select({}).all();
         const minifiedRecords = await minifyData(records);
-
-        return new NextResponse(JSON.stringify(minifiedRecords), {
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-          },
-        })
+        return NextResponse.json(minifiedRecords)
+        // return new NextResponse(JSON.stringify(minifiedRecords), {
+        //   headers: {
+        //     'Access-Control-Allow-Origin': origin || '*',
+        //     'Content-Type' : 'application.json'
+        //   },
+        // })
    
     } catch (error) {
         console.error('Error handling GET request for data:', error);
@@ -62,15 +61,14 @@ export async function PUT(req: Request) {
             'jp_fix_text': newData
           }
           const updatedRecords = await table.update(id, updatedField);
+          return NextResponse.json(updatedRecords)
 
-          return new NextResponse(JSON.stringify(updatedRecords), {
-            status: 200,
-            headers: {
-              'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-              'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            },
-          })
+          // return new NextResponse(JSON.stringify(updatedRecords), {
+          //   headers: {
+          //     'Access-Control-Allow-Origin': origin || '*',
+          //     'Content-Type' : 'application.json'
+          //   },
+          // })
         } 
 
       } catch (error) {

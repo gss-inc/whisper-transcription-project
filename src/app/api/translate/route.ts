@@ -11,6 +11,7 @@ import { OpenAIClient, AzureKeyCredential } from '@azure/openai';
 export async function PUT(req: Request) {
     try {
         let textToTranslate;
+        // const origin = req.headers.get('origin')
         const {id} = await req.json()
         const singleRecord = await table.find(id)
         const jp_text = singleRecord.get('jp_text')
@@ -51,13 +52,19 @@ export async function PUT(req: Request) {
           const updatedField = {
             'ch_text': newData
           }
-          const updatedRecords = await table.update(id, updatedField);
+          const translatedRecord = await table.update(id, updatedField);
 
-          return NextResponse.json(updatedRecords)
+          return NextResponse.json(translatedRecord)
+          // return new NextResponse(JSON.stringify(translatedRecord), {
+          //   headers: {
+          //     'Access-Control-Allow-Origin': origin || '*',
+          //     'Content-Type' : 'application.json'
+          //   },
+          // })
         } 
 
     } catch (error) {
-        console.error('Error handling first POST request:', error);
+        console.error('Error handling PUT request:', error);
         return NextResponse.json({ "message": "Missing required data" })
     }
 
