@@ -95,7 +95,7 @@ export async function POST(req: Request) {
     let video_url = url;
 
     const videoUrl = video_url
-    const downloadPath = path.join(process.cwd(), 'public/download', 'tmp.mp3');
+    const downloadPath = path.join(process.cwd(), '/tmp', 'tmp.mp3');
     const whisperApiKey = process.env.WHISPER_API_KEY;
   
     //video download
