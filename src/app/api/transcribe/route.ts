@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server'
 import { table, minifyData } from "../../utils/airtable"
+import { convertTextFormat } from "../../utils/format"
 import { OpenAIClient, AzureKeyCredential } from '@azure/openai';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
+const FormData = require('form-data');
 
 export async function GET() {
     try {
@@ -81,84 +83,74 @@ export async function PUT(req: Request) {
       }
 }
 
+/**
+ * 
+ * @param req 
+ * @returns transcribe mp3 and save to jp_text
+ */
 export async function POST(req: Request) {
-
   try {
-   // download first the video link 
-   const { id } = await req.json()
-   const singleRecord = await table.find(id)
-   const video_url = singleRecord.get('video_url')
+    const { id, url } = await req.json()
+    let video_url = url;
 
-// Replace with your Airtable API endpoint URL
-const airtableAttachmentUrl = 'https://api.airtable.com/v0/appHpS1houbYiAcWa/Projects/' + encodeURIComponent('atthNcH2IquEBCeRo');
-
-// Replace with your Airtable API key
-const apiKey = 'patDKJRRKA7EnF21m.771fcf78fa8736028f1aee0849c7ca7a0ef1e5dbc744b6b9352d1dabc6b108e6';
-
-const headers = {
-  Authorization: `Bearer ${apiKey}`,
-};
-
-// Make a GET request to the Airtable attachment URL
-await axios
-  .get(airtableAttachmentUrl, { headers, responseType: 'stream' })
-  .then((response) => {
-    // Specify the path where you want to save the downloaded file
-    const filePath = 'public/downloads/file.ext';
-
-    // Create a write stream to save the attachment
-    const writer = fs.createWriteStream(filePath);
-
-    // Pipe the attachment data to the write stream
+    const videoUrl = video_url
+    const downloadPath = path.join(process.cwd(), 'public/download', 'tmp.mp3');
+    const whisperApiKey = process.env.WHISPER_API_KEY;
+  
+    //video download
+    const response = await axios.get(videoUrl, { responseType: 'stream' });
+    const writer = fs.createWriteStream(downloadPath);
     response.data.pipe(writer);
-
-    // Handle the completion of the write stream
-    writer.on('finish', () => {
-      console.log('Attachment downloaded successfully.');
+  
+    await new Promise<void>((resolve, reject) => {
+      writer.on('finish', () => {
+        console.log('Attachment downloaded successfully.');
+        resolve();
+      });
+      writer.on('error', (err) => {
+        console.error('Error saving video:', err);
+        reject(err);
+      });
     });
+  
+    // audio transcribe
+    const audioFile = fs.createReadStream(downloadPath);
+    const formData = new FormData();
+    formData.append('file', audioFile);
+    formData.append('model', 'whisper-1');
+    formData.append('response_format', 'srt');
+  
+    const transcribeResponse = await axios.post(
+      'https://api.openai.com/v1/audio/transcriptions',
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${whisperApiKey}`,
+          ...formData.getHeaders(),
+        },
+      }
+    );
 
-    // Handle errors
-    writer.on('error', (err) => {
-      console.error('Error saving attachment:', err);
-    });
-  })
-  .catch((error) => {
-    console.error('Error downloading attachment:', error);
-  });
+    const formattedData = convertTextFormat(transcribeResponse.data)
+    // update to jp_fix column
+    const updatedField = {
+      'jp_text': formattedData
+    }
+    const transcribeText = await table.update(id, updatedField)
 
-
-
-   // const response = await axios.get('https://www.youtube.com/watch?v=wbYGdCslFVg&t=2s&ab_channel=ZoumDataScience', { responseType: 'stream' });
-  //  const filePath = path.join(process.cwd(), 'public', 'tmp.mp3');
-  //  const writer = fs.createWriteStream(filePath);
-    
-  //  response.data.pipe(writer);
-
-  //  writer.on('finish', () => {
-  //     // return NextResponse.json({ "message": "Video downloaded and saved successfully" })
-  //     return new NextResponse( "Video downloaded and saved successfully", {
-  //       status: 200,
-  //       headers: {
-  //         'Access-Control-Allow-Origin': '*',
-  //         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  //         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  //       },
-  //     })
-  //   });
-
-  //   // Handle errors
-  //   writer.on('error', (err) => {
-  //     console.error('Error saving video:', err);
-  //     return NextResponse.json({ "message": "An error occurred while saving the video." })
-      
-  //   });
-
+    return new NextResponse(JSON.stringify(transcribeText), {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    })
 
   } catch (error) {
-    console.error('Error downloading video:', error);
-    return NextResponse.json({ "message": "An error occurred while downloading the video."})
+    console.error('Error:', error);
+    return NextResponse.json({ message: 'An error occurred.' });
   }
-
 }
   
 
