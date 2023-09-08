@@ -89,6 +89,7 @@ export async function PUT(req: Request) {
  * @returns transcribe mp3 and save to jp_text
  */
 export async function POST(req: Request) {
+  
   try {
     const { id, url } = await req.json()
     let video_url = url;
@@ -149,7 +150,7 @@ export async function POST(req: Request) {
 
   } catch (error) {
     console.error('Error:', error);
-    return NextResponse.json({ message: 'An error occurred.' });
+    return NextResponse.json({ message: `An error occurred. : ${error}` });
   }
 }
   
