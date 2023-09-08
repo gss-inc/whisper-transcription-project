@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server'
 import { table, minifyData } from "../../utils/airtable"
+import { convertTextFormat } from "../../utils/format"
 import { OpenAIClient, AzureKeyCredential } from '@azure/openai';
+import axios from 'axios';
+import fs from 'fs';
+import path from 'path';
+const FormData = require('form-data');
 
 export async function GET() {
     try {
@@ -78,7 +83,75 @@ export async function PUT(req: Request) {
       }
 }
 
+/**
+ * 
+ * @param req 
+ * @returns transcribe mp3 and save to jp_text
+ */
+export async function POST(req: Request) {
+  try {
+    const { id, url } = await req.json()
+    let video_url = url;
 
+    const videoUrl = video_url
+    const downloadPath = path.join(process.cwd(), 'public/download', 'tmp.mp3');
+    const whisperApiKey = process.env.WHISPER_API_KEY;
+  
+    //video download
+    const response = await axios.get(videoUrl, { responseType: 'stream' });
+    const writer = fs.createWriteStream(downloadPath);
+    response.data.pipe(writer);
+  
+    await new Promise<void>((resolve, reject) => {
+      writer.on('finish', () => {
+        console.log('Attachment downloaded successfully.');
+        resolve();
+      });
+      writer.on('error', (err) => {
+        console.error('Error saving video:', err);
+        reject(err);
+      });
+    });
+  
+    // audio transcribe
+    const audioFile = fs.createReadStream(downloadPath);
+    const formData = new FormData();
+    formData.append('file', audioFile);
+    formData.append('model', 'whisper-1');
+    formData.append('response_format', 'srt');
+  
+    const transcribeResponse = await axios.post(
+      'https://api.openai.com/v1/audio/transcriptions',
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${whisperApiKey}`,
+          ...formData.getHeaders(),
+        },
+      }
+    );
+
+    const formattedData = convertTextFormat(transcribeResponse.data)
+    // update to jp_fix column
+    const updatedField = {
+      'jp_text': formattedData
+    }
+    const transcribeText = await table.update(id, updatedField)
+
+    return new NextResponse(JSON.stringify(transcribeText), {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    })
+
+  } catch (error) {
+    console.error('Error:', error);
+    return NextResponse.json({ message: 'An error occurred.' });
+  }
+}
   
 
 
