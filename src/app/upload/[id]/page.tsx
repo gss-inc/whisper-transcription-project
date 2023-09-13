@@ -4,16 +4,15 @@ export default function UploadPage({params} : {
     params: { id: string}
 }) {
   return (
-    <section className="container grid items-center gap-6 pt-6 pb-8 md:py-10">
-      <div className="flex max-w-[980px] flex-col items-start gap-2">
-        <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
-          Transcribe videos.
-        </h1>
-        <p className="max-w-[700px] text-lg text-muted-foreground">
-          Just upload video
-        </p>
-      </div>
-      <Transcribe />
-    </section>
+  <div id="uploadArea" className="upload-area">
+    <div className="upload-area__header">
+      <h1 className="upload-area__title">動画の管理</h1>
+      <p className="upload-area__paragraph">
+        Accepted video file types (.mp3, .mp4) and max file size - 25MB
+      </p>
+    </div>
+    <Transcribe />
+  </div>
+
   )
 }
