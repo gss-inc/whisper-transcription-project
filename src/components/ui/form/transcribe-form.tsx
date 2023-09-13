@@ -2,9 +2,7 @@
 
 import { FormEvent } from "react"
 import {
-  apiKeyAtom,
   fileNameAtom,
-  fileTypeAtom,
   handlingAtom,
   transcriptionHandlerAtom,
 } from "@/atoms/transcription-atoms"
@@ -14,14 +12,18 @@ const TranscribeForm = () => {
   const handling = useAtomValue(handlingAtom)
   const submitHandler = useSetAtom(transcriptionHandlerAtom)
   const setFileName = useSetAtom(fileNameAtom)
-  const setFileType = useSetAtom(fileTypeAtom)
-  const setAPIKey = useSetAtom(apiKeyAtom)
+  const getIdFromUrl = () => {
+    const urlParts = window.location.pathname.split('/');
+    return urlParts[urlParts.length - 1];
+  };
 
   return (
     <form
       onSubmit={async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const formData = new FormData(e.currentTarget)
+        const idFromUrl = getIdFromUrl();
+        formData.append('id', idFromUrl);
         try {
           await submitHandler(formData)
         } catch (error: any) {
@@ -32,7 +34,7 @@ const TranscribeForm = () => {
     >
       <div className="space-y-4">
         <label>
-          Choose your video or audio{" "}
+          Choose your video{" "}
           <span className="text-xs text-neutral-500">Max: 25MB</span>
         </label>
         <input

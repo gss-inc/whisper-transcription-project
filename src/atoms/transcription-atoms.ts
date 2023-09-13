@@ -1,8 +1,6 @@
 import axios from "axios"
 import { atom } from "jotai"
 
-export const apiKeyAtom = atom<string>("")
-
 // TRANSCRIBE
 export const fileNameAtom = atom<string>("")
 export const fileTypeAtom = atom<"vtt" | "srt">("vtt")
@@ -13,12 +11,15 @@ export const formStateAtom = atom((get) => {
   const transcription = get(transcriptionAtom)
   return !transcription ? "transcribe" : "translate"
 })
+
 export const transcriptionHandlerAtom = atom(
   null,
   async (_get, set, formData: FormData) => {
     try {
       set(handlingAtom, true)
-      const { data } = await axios.post("/api/transcribe", formData)
+
+      const idRow = formData.get('id')
+      const { data } = await axios.post(`/api/transcribe/${idRow}`, formData)
       if (!data) {
         throw new Error("No data from response.")
       }
