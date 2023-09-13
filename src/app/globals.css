@@ -1,12 +1,106 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap");
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-body {
-  @apply leading-[normal] m-0;
+/* General Styles */
+
+* {
+  box-sizing: border-box;
 }
-*,
-::before,
-::after {
-  border-width: 0;
+
+:root {
+  --clr-white: rgb(255, 255, 255);
+  --clr-black: rgb(0, 0, 0);
+  --clr-light: rgb(245, 248, 255);
+  --clr-light-gray: rgb(196, 195, 196);
+  --clr-blue: rgb(63, 134, 255);
+  --clr-light-blue: rgb(171, 202, 255);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--clr-light);
+  color: var(--clr-black);
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.125rem;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* End General Styles */
+
+/* Upload Area */
+.upload-area {
+  width: 100%;
+  max-width: 25rem;
+  background-color: var(--clr-white);
+  box-shadow: 0 10px 60px rgb(218, 229, 255);
+  border: 2px solid var(--clr-light-blue);
+  border-radius: 24px;
+  padding: 2rem 1.875rem 5rem 1.875rem;
+  margin: 0.625rem;
+  text-align: center;
+}
+
+.upload-area--open { /* Slid Down Animation */
+  animation: slidDown 500ms ease-in-out;
+}
+
+@keyframes slidDown {
+  from {
+    height: 28.125rem; /* 450px */
+  }
+
+  to {
+    height: 35rem; /* 560px */
+  }
+}
+
+/* Header */
+.upload-area__header {
+
+}
+
+.upload-area__title {
+  font-size: 1.8rem;
+  font-weight: 500;
+  margin-bottom: 0.3125rem;
+}
+
+.upload-area__paragraph {
+  font-size: 0.9375rem;
+  color: var(--clr-light-gray);
+  margin-top: 0;
+}
+
+.upload-area__tooltip {
+  position: relative;
+  color: var(--clr-light-blue);
+  cursor: pointer;
+  transition: color 300ms ease-in-out;
+}
+
+.upload-area__tooltip:hover {
+  color: var(--clr-blue);
+}
+
+.upload-area__tooltip-data {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -125%);
+  min-width: max-content;
+  background-color: var(--clr-white);
+  color: var(--clr-blue);
+  border: 1px solid var(--clr-light-blue);
+  padding: 0.625rem 1.25rem;
+  font-weight: 500;
+  opacity: 0;
+  visibility: hidden;
+  transition: none 300ms ease-in-out;
+  transition-property: opacity, visibility;
+}
+
+.upload-area__tooltip:hover .upload-area__tooltip-data {
+  opacity: 1;
+  visibility: visible;
 }
