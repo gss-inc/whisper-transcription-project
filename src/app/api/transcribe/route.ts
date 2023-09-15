@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { table, minifyData } from "../../utils/airtable"
-import { convertTextFormat } from "../../utils/format"
+import { convertTextFormat, createFormData } from "../../utils/format"
 import { OpenAIClient, AzureKeyCredential } from '@azure/openai';
 import axios from 'axios';
 import { cloudinary } from "../../utils/cloudinary"
@@ -142,23 +142,7 @@ export async function POST(req: Request){
 }
 
 
-export const createFormData = async (url: string, fieldName: string): Promise<FormData | null> => {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch the file from ${url}`);
-    }
 
-    const blob = await response.blob();
-    const formData = new FormData();
-    formData.append(fieldName, blob, 'tmp.mp4');
-
-    return formData;
-  } catch (error) {
-    console.error('Error creating FormData:', error);
-    return null;
-  }
-}
 
 
 
