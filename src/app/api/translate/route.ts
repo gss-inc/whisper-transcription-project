@@ -78,7 +78,7 @@ export async function POST(req: Request) {
     const {id, button} = await req.json()
     const singleRecord = await table.find(id)
 
-    let fieldText, prompt, fieldToUpdate, responseField;
+    let fieldText, prompt, fieldToUpdate, responseField, fieldB;
 
     switch (button) {
       case '最終調整':
@@ -95,7 +95,8 @@ export async function POST(req: Request) {
   
       case '内容整合':
         fieldText = singleRecord.get('ch_fix_text');
-        prompt = `文章を読み取り、会話の前後がおかしかったり、体裁がおかしな部分があれば修正した文章を生成してください。生成フォーマットはそのまま使用してください。`;
+        fieldB = singleRecord.get('jp_fix_text');
+        prompt = `文章${fieldB}を正として文章${fieldText}の内容が相違していれば修正し、中国語で生成し直してください。`;
         fieldToUpdate = 'ch_integration_text';
         responseField = 'updatedRecordFix';
         break;
@@ -107,7 +108,7 @@ export async function POST(req: Request) {
     const messages = [
       {
         role: 'user',
-        content: fieldText,
+        content: `文章A：${fieldB}\n文章B：${fieldText}`,
       },
       { role: 'assistant', content: prompt },
     ];
