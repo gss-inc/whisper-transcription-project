@@ -76,8 +76,8 @@ export async function PUT(req: Request) {
         } 
 
       } catch (error) {
-        console.error('Error handling first POST request:', error);
-        return NextResponse.json({ "message": "Missing required data" })
+        console.error('Error handling request:', error);
+        return NextResponse.json({ "message": error })
       }
 }
 
