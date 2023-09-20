@@ -83,7 +83,12 @@ export async function POST(req: Request) {
     switch (button) {
       case '最終調整':
         fieldText = singleRecord.get('ch_text');
-        prompt = `文章を読み取り、会話の前後がおかしかったり、体裁がおかしな部分があれば修正した文章を生成してください。生成フォーマットはそのまま使用してください。`;
+        prompt = `下記条件を反映させた文章を中国語で生成してください。
+生成フォーマットはそのまま使用してください。
+・スキピ等、日本特有の名詞や動詞があれば、中国語で使用する言葉に変更してください。
+・化粧品の名前が外国の製品の場合、中国でわかる製品名に変更してください。
+・若者言葉を自然に取り入れてください。
+・友達に話すような言い回しにしてください。`;
         fieldToUpdate = 'ch_fix_text';
         responseField = 'updatedRecords';
         break;
