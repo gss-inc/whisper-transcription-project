@@ -7,6 +7,7 @@ Airtable.configure({
 const base = Airtable.base(process.env.AIRTABLE_BASE_ID);
   
 const table = base(process.env.AIRTABLE_TABLE_NAME);
+const gptTable = base(process.env.AIRTABLE_GPT_NAME);
 
 const minifyData = (records: any[]) =>
   records.map((record) => minifyRecord(record));
@@ -21,4 +22,4 @@ const minifyRecord = (record: { id: string; fields: { video_url:string; jp_text:
     };
 };
   
-export { table, minifyData };
+export { table, minifyData , gptTable};
