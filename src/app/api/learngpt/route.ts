@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const messages = [
         {
           role: 'user',
-          content: `Please learn and add this to all generated prompts: ${content}`,
+          content: `あなたは学習者です。与えられた文章の内容を記憶してください。${content} 生成文章は『DONE』のみとしてください。 `,
         },
       ];
   
