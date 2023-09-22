@@ -23,12 +23,10 @@ export async function PUT(req: Request) {
             textToTranslate = jp_text
         }
 
-        const prompt = `下記条件を反映させた文章を中国語に翻訳してください。生成フォーマットはそのまま使用してください。
+        const prompt = `下記条件を反映させた文章を中国語に翻訳してください。
+生成フォーマットはそのまま使用してください。
 ■条件
-・日本語のニュアンスをそのまま中国語でも伝わるような文章に修正した中国語で生成してください。
-・若者言葉を自然に取り入れてください。
-・スキピ等、日本特有の名詞や動詞を中国人に伝わるような文章にしてください。
-・化粧品の名前（外国の製品）を中国人がわかる名前に修正して文章を生成してください。`
+・スキピ等、日本特有の名詞や動詞中国人でもわかる、あるいは本来の日本語と別の物だけど同じレベルの中国ならではの物に変換して翻訳してください。`
 
         const messages = [
           {
@@ -91,8 +89,8 @@ export async function POST(req: Request) {
         fieldText = singleRecord.get('ch_text');
         prompt = `下記条件を反映させた文章を中国語で生成してください。
 生成フォーマットはそのまま使用してください。
- ■条件
-・友達に話すような言い回しにしてください。`;
+■条件
+・若者言葉を自然に取り入れて、友達に話すような言い回しにしてください。`;
         fieldToUpdate = 'ch_fix_text';
         responseField = 'updatedRecords';
         break;
@@ -100,7 +98,7 @@ export async function POST(req: Request) {
       case '内容整合':
         fieldText = singleRecord.get('ch_fix_text');
         fieldB = singleRecord.get('jp_fix_text');
-        prompt = `文章${fieldB}を正として文章${fieldText}の内容が相違していれば修正し、中国語で生成し直してください。`;
+        prompt = `文章Aを正として文章Bの内容が相違部分があれば修正し、なければそのまま同じ文章を中国語で生成してください。`;
         fieldToUpdate = 'ch_integration_text';
         responseField = 'updatedRecordFix';
         break;
