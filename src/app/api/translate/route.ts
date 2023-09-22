@@ -23,7 +23,13 @@ export async function PUT(req: Request) {
             textToTranslate = jp_text
         }
 
-        const prompt = `文章を中国語に翻訳してください。生成フォーマットはそのまま使用してください。`
+        const prompt = `下記条件を反映させた文章を中国語に翻訳してください。生成フォーマットはそのまま使用してください。
+■条件
+・日本語のニュアンスをそのまま中国語でも伝わるような文章に修正した中国語で生成してください。
+・若者言葉を自然に取り入れてください。
+・スキピ等、日本特有の名詞や動詞を中国人に伝わるような文章にしてください。
+・化粧品の名前（外国の製品）を中国人がわかる名前に修正して文章を生成してください。`
+
         const messages = [
           {
             role: 'user',
@@ -85,9 +91,7 @@ export async function POST(req: Request) {
         fieldText = singleRecord.get('ch_text');
         prompt = `下記条件を反映させた文章を中国語で生成してください。
 生成フォーマットはそのまま使用してください。
-・スキピ等、日本特有の名詞や動詞があれば、中国語で使用する言葉に変更してください。
-・化粧品の名前が外国の製品の場合、中国でわかる製品名に変更してください。
-・若者言葉を自然に取り入れてください。
+ ■条件
 ・友達に話すような言い回しにしてください。`;
         fieldToUpdate = 'ch_fix_text';
         responseField = 'updatedRecords';
