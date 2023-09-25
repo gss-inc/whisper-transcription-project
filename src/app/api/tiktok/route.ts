@@ -59,7 +59,14 @@ export async function POST(req: Request, res) {
 
     } catch (error) {
         console.error(error);
-        return NextResponse.json(error)
+        return new NextResponse(JSON.stringify(error), {
+          status: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          },
+        })
     }
 
 }
