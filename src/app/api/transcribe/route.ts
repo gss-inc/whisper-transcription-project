@@ -76,7 +76,14 @@ export async function PUT(req: Request) {
 
   } catch (error) {
     console.error('Error handling request:', error);
-    return NextResponse.json({ "message": error })
+    return new NextResponse(JSON.stringify(error), {
+      status: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    })
   }
 }
 
