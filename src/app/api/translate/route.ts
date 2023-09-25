@@ -81,25 +81,15 @@ export async function POST(req: Request) {
   try {
     const {id, button} = await req.json()
     const singleRecord = await table.find(id)
+    const chnScene = singleRecord.get('情景（中国語文章）')
 
     let fieldText, prompt, fieldToUpdate, responseField, fieldB;
 
     switch (button) {
       case '最終調整':
         fieldText = singleRecord.get('ch_text');
-        prompt = `下記条件を反映させた文章を中国語で生成してください。
-生成フォーマットはそのまま使用してください。
-■条件
-・若者言葉を自然に取り入れて、友達に話すような言い回しにしてください。`;
+        prompt = `下記条件を反映させた文章を中国語で生成してください。 生成フォーマットはそのまま使用してください。 ■条件 ・若者言葉を自然に取り入れて、友達に話すような言い回しにしてください。・ ${chnScene} を反映した文章としてください。`;
         fieldToUpdate = 'ch_fix_text';
-        responseField = 'updatedRecords';
-        break;
-  
-      case '内容整合':
-        fieldText = singleRecord.get('ch_fix_text');
-        fieldB = singleRecord.get('jp_fix_text');
-        prompt = `文章Aを正として文章Bの内容が相違部分があれば修正し、なければそのまま同じ文章を中国語で生成してください。`;
-        fieldToUpdate = 'ch_integration_text';
         responseField = 'updatedRecordFix';
         break;
   
