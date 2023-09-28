@@ -82,15 +82,18 @@ export async function PUT(req: Request) {
 }
 
 /***
- * fix ch_text to ch_fix_text
+ * 最終調整' - fix ch_text to ch_fix_text
+ * 内容整合 - ch_fix_text to ch_integration_text
  */
 export async function POST(req: Request) {
   try {
     const {id, button} = await req.json()
     const singleRecord = await table.find(id)
     const chnScene = singleRecord.get('情景（中国語文章）')
+    const jp_fix_text = singleRecord.get('jp_fix_text')
+    const ch_fix_text = singleRecord.get('ch_fix_text')
 
-    let fieldText, prompt, fieldToUpdate, responseField, fieldB;
+    let fieldText, prompt, fieldToUpdate, responseField;
 // 最終調整ボタン
     switch (button) {
       case '最終調整':
@@ -98,6 +101,13 @@ export async function POST(req: Request) {
         prompt = `下記条件を反映させた文章を中国語で生成してください。 生成フォーマットはそのまま使用してください。 ■条件 ・若者言葉を自然に取り入れて、友達に話すような言い回しにしてください。・情景を反映した文章としてください。情景:「 ${chnScene} 」※情景の「」内が空の場合は情景を反映しないでください。`;
         fieldToUpdate = 'ch_fix_text';
         responseField = 'updatedRecordFix';
+        break;
+
+      case '内容整合':
+        fieldText = singleRecord.get('ch_fix_text');
+        prompt = `${jp_fix_text}を正として${ch_fix_text}の内容が相違部分があれば修正し、なければそのまま同じ文章を中国語で生成してください。`;
+        fieldToUpdate = 'ch_integration_text';
+        responseField = 'updatedRecordText';
         break;
   
       default:
@@ -107,7 +117,7 @@ export async function POST(req: Request) {
     const messages = [
       {
         role: 'user',
-        content: `文章A：${fieldB}\n文章B：${fieldText}`,
+        content: fieldText,
       },
       { role: 'assistant', content: prompt },
     ];
