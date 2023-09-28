@@ -22,7 +22,7 @@ export async function PUT(req: Request) {
         } else {
             textToTranslate = jp_text
         }
-
+// JP→CHボタン
         const prompt = `下記条件を反映させた文章を中国語に翻訳してください。
 生成フォーマットはそのまま使用してください。
 ■条件
@@ -91,11 +91,11 @@ export async function POST(req: Request) {
     const chnScene = singleRecord.get('情景（中国語文章）')
 
     let fieldText, prompt, fieldToUpdate, responseField, fieldB;
-
+// 最終調整ボタン
     switch (button) {
       case '最終調整':
         fieldText = singleRecord.get('ch_text');
-        prompt = `下記条件を反映させた文章を中国語で生成してください。 生成フォーマットはそのまま使用してください。 ■条件 ・若者言葉を自然に取り入れて、友達に話すような言い回しにしてください。・ ${chnScene} を反映した文章としてください。`;
+        prompt = `下記条件を反映させた文章を中国語で生成してください。 生成フォーマットはそのまま使用してください。 ■条件 ・若者言葉を自然に取り入れて、友達に話すような言い回しにしてください。・情景を反映した文章としてください。情景:「 ${chnScene} 」※情景の「」内が空の場合は情景を反映しないでください。`;
         fieldToUpdate = 'ch_fix_text';
         responseField = 'updatedRecordFix';
         break;

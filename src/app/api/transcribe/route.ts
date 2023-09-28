@@ -36,11 +36,12 @@ export async function PUT(req: Request) {
     const jpnScene = singleRecord.get('情景（日本語文章）')
 
     let fieldText, prompt, fieldToUpdate, responseField;
-
+// 文章修正ボタン
     switch (button) {
       case '文章修正':
         fieldText = singleRecord.get('jp_text');
-        prompt = `文章を読み取り、会話の前後がおかしかったり、体裁がおかしな部分があれば修正した文章を生成してください。生成フォーマットはそのまま使用してください。また、${jpnScene} を反映した文章としてください。`;
+        prompt = `文章を読み取り、会話の前後がおかしかったり、体裁がおかしな部分があれば修正した文章を生成してください。生成フォーマットはそのまま使用してください。
+        ■条件 ・情景を反映した文章としてください。情景:「 ${jpnScene} 」※情景の「」内が空の場合は情景を反映しないでください。`;
         fieldToUpdate = 'jp_fix_text';
         responseField = 'updatedRecords';
         break;
